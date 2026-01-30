@@ -221,6 +221,45 @@
         .dark-mode .footer p {
             color: var(--dark-text-tertiary);
         }
+
+        /* Theme Toggle Button */
+        .theme-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-md);
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--light-text-primary);
+        }
+
+        .dark-mode .theme-toggle-btn {
+            background: var(--dark-bg-tertiary);
+            border-color: var(--gray-600);
+            color: var(--dark-text-primary);
+        }
+
+        .theme-toggle-btn:hover {
+            background: var(--gray-200);
+            border-color: var(--primary-400);
+        }
+
+        .dark-mode .theme-toggle-btn:hover {
+            background: var(--dark-bg-secondary);
+        }
+
+        .theme-icon {
+            font-size: 1rem;
+        }
+
+        .theme-text {
+            font-size: 0.8rem;
+        }
     </style>
 
     <!-- Favicon -->
@@ -238,8 +277,10 @@
                     <span>9급 CBT</span>
                 </a>
                 <nav class="nav">
-                    <a href="#subjects" class="nav-link">과목 선택</a>
-                    <button class="theme-toggle" id="themeToggle" aria-label="테마 변경"></button>
+                    <button class="theme-toggle-btn" id="themeToggle" aria-label="테마 변경">
+                        <span class="theme-icon">🌙</span>
+                        <span class="theme-text">다크모드</span>
+                    </button>
                 </nav>
             </div>
         </div>

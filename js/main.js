@@ -45,7 +45,7 @@ function showToast(message, type = 'info') {
         <span>${message}</span>
     `;
     container.appendChild(toast);
-    
+
     setTimeout(() => {
         toast.style.animation = 'slideIn 0.3s ease reverse';
         setTimeout(() => toast.remove(), 300);
@@ -64,10 +64,19 @@ function formatExamType(type) {
 // Theme Management
 // ============================================
 function initTheme() {
+    // Default to dark mode if no preference is stored
+    const storedPreference = localStorage.getItem('darkMode');
+    if (storedPreference === null) {
+        state.darkMode = true; // Default dark mode
+        localStorage.setItem('darkMode', 'true');
+    }
+
     if (state.darkMode) {
         document.body.classList.add('dark-mode');
     }
-    
+
+    updateThemeButton();
+
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', toggleTheme);
@@ -78,6 +87,22 @@ function toggleTheme() {
     state.darkMode = !state.darkMode;
     document.body.classList.toggle('dark-mode', state.darkMode);
     localStorage.setItem('darkMode', state.darkMode);
+    updateThemeButton();
+}
+
+function updateThemeButton() {
+    const themeIcon = document.querySelector('.theme-icon');
+    const themeText = document.querySelector('.theme-text');
+
+    if (themeIcon && themeText) {
+        if (state.darkMode) {
+            themeIcon.textContent = '☀️';
+            themeText.textContent = '라이트모드';
+        } else {
+            themeIcon.textContent = '🌙';
+            themeText.textContent = '다크모드';
+        }
+    }
 }
 
 // ============================================
@@ -86,13 +111,13 @@ function toggleTheme() {
 async function checkExamExists(subject, year, type) {
     const pdfPath = `data/${subject}/${year}_${type}.pdf`;
     const answerPath = `data/${subject}/${year}_${type}_answers.json`;
-    
+
     try {
         const [pdfResponse, answerResponse] = await Promise.all([
             fetch(pdfPath, { method: 'HEAD' }),
             fetch(answerPath, { method: 'HEAD' })
         ]);
-        
+
         return {
             hasPdf: pdfResponse.ok,
             hasAnswers: answerResponse.ok,
@@ -114,9 +139,9 @@ async function scanAvailableExams(subject) {
         national: [],
         local: []
     };
-    
+
     const checkPromises = [];
-    
+
     for (const year of CONFIG.years) {
         for (const type of Object.keys(CONFIG.examTypes)) {
             checkPromises.push(
@@ -128,9 +153,9 @@ async function scanAvailableExams(subject) {
             );
         }
     }
-    
+
     const results = await Promise.all(checkPromises);
-    
+
     for (const result of results) {
         if (result.hasPdf || result.hasAnswers) {
             exams[result.type].push({
@@ -142,11 +167,11 @@ async function scanAvailableExams(subject) {
             });
         }
     }
-    
+
     // Sort by year descending
     exams.national.sort((a, b) => b.year - a.year);
     exams.local.sort((a, b) => b.year - a.year);
-    
+
     return exams;
 }
 
@@ -154,12 +179,12 @@ async function updateSubjectCounts() {
     for (const subject of Object.keys(CONFIG.subjects)) {
         const exams = await scanAvailableExams(subject);
         const totalCount = exams.national.length + exams.local.length;
-        
+
         const countElement = document.getElementById(`${subject}-count`);
         if (countElement) {
             countElement.textContent = `${totalCount}개 시험`;
         }
-        
+
         state.availableExams[subject] = exams;
     }
 }
@@ -171,23 +196,23 @@ function openModal(subject) {
     state.selectedSubject = subject;
     state.selectedYear = null;
     state.selectedType = 'national';
-    
+
     const modal = document.getElementById('examModal');
     const title = document.getElementById('modalSubjectTitle');
-    
+
     title.textContent = formatSubjectName(subject);
-    
+
     // Reset tabs
     document.querySelectorAll('.exam-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.type === 'national');
     });
-    
+
     // Update year grid
     updateYearGrid();
-    
+
     // Update start button
     updateStartButton();
-    
+
     modal.classList.add('active');
 }
 
@@ -202,27 +227,27 @@ function updateYearGrid() {
     const yearGrid = document.getElementById('yearGrid');
     const noExamMessage = document.getElementById('noExamMessage');
     const exams = state.availableExams[state.selectedSubject]?.[state.selectedType] || [];
-    
+
     yearGrid.innerHTML = '';
-    
+
     if (exams.length === 0) {
         yearGrid.style.display = 'none';
         noExamMessage.style.display = 'block';
         return;
     }
-    
+
     yearGrid.style.display = 'grid';
     noExamMessage.style.display = 'none';
-    
+
     // Show all years, marking available ones
     for (const year of CONFIG.years) {
         const exam = exams.find(e => e.year === year);
         const isAvailable = !!exam;
-        
+
         const yearCard = document.createElement('div');
         yearCard.className = `card year-card ${!isAvailable ? 'disabled' : ''}`;
         yearCard.dataset.year = year;
-        
+
         yearCard.innerHTML = `
             <div class="font-bold text-lg">${year}년</div>
             ${isAvailable ? `
@@ -232,25 +257,25 @@ function updateYearGrid() {
                 </div>
             ` : '<div class="text-muted text-sm mt-sm">파일 없음</div>'}
         `;
-        
+
         if (isAvailable) {
             yearCard.addEventListener('click', () => selectYear(year));
         } else {
             yearCard.style.opacity = '0.5';
             yearCard.style.cursor = 'not-allowed';
         }
-        
+
         yearGrid.appendChild(yearCard);
     }
 }
 
 function selectYear(year) {
     state.selectedYear = year;
-    
+
     document.querySelectorAll('.year-card').forEach(card => {
         card.classList.toggle('selected', parseInt(card.dataset.year) === year);
     });
-    
+
     updateStartButton();
 }
 
@@ -258,7 +283,7 @@ function updateStartButton() {
     const startBtn = document.getElementById('startExamBtn');
     const exams = state.availableExams[state.selectedSubject]?.[state.selectedType] || [];
     const selectedExam = exams.find(e => e.year === state.selectedYear);
-    
+
     startBtn.disabled = !selectedExam;
 }
 
@@ -270,13 +295,13 @@ function startExam() {
         showToast('과목과 연도를 선택해주세요.', 'warning');
         return;
     }
-    
+
     const examParams = new URLSearchParams({
         subject: state.selectedSubject,
         year: state.selectedYear,
         type: state.selectedType
     });
-    
+
     window.location.href = `exam.html?${examParams.toString()}`;
 }
 
@@ -291,32 +316,32 @@ function initEventListeners() {
             openModal(subject);
         });
     });
-    
+
     // Modal close
     document.getElementById('modalClose')?.addEventListener('click', closeModal);
     document.getElementById('modalCancelBtn')?.addEventListener('click', closeModal);
     document.getElementById('examModal')?.addEventListener('click', (e) => {
         if (e.target.id === 'examModal') closeModal();
     });
-    
+
     // Exam type tabs
     document.querySelectorAll('.exam-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             state.selectedType = tab.dataset.type;
             state.selectedYear = null;
-            
+
             document.querySelectorAll('.exam-tab').forEach(t => {
                 t.classList.toggle('active', t === tab);
             });
-            
+
             updateYearGrid();
             updateStartButton();
         });
     });
-    
+
     // Start exam button
     document.getElementById('startExamBtn')?.addEventListener('click', startExam);
-    
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
@@ -331,7 +356,7 @@ function initEventListeners() {
 async function init() {
     initTheme();
     initEventListeners();
-    
+
     // Scan available exams (this may take a moment)
     await updateSubjectCounts();
 }
