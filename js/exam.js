@@ -601,6 +601,19 @@ function initEventListeners() {
         }
     });
 
+    // Mobile OMR Toggle
+    const answerPanel = document.querySelector('.answer-panel');
+    const panelHeader = document.querySelector('.panel-header');
+
+    if (answerPanel && panelHeader) {
+        panelHeader.addEventListener('click', () => {
+            // Only toggle if we are in mobile view (stacked layout)
+            if (window.innerWidth <= 1024) {
+                answerPanel.classList.toggle('expanded');
+            }
+        });
+    }
+
     // Warn before leaving
     window.addEventListener('beforeunload', (e) => {
         if (Object.keys(state.answers).length > 0) {
