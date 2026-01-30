@@ -949,8 +949,7 @@ a:hover {
     overflow: auto;
     padding: var(--spacing-md);
     display: block;
-    text-align: left;
-    /* Default alignment prevents left clipping */
+    /* Removed text-align: center as it clips start of wide content */
 }
 
 @media (max-width: 480px) {
@@ -963,10 +962,9 @@ a:hover {
     /* Allow canvas to grow beyond container width for zooming */
     max-width: none;
     height: auto;
-    /* Use block display with auto margin for safe centering (centers if fits, aligns left if overflows) */
+    /* Use block display + margin auto for SAFE centering (centers if fits, aligns start if overflows) */
     display: block;
     margin: 0 auto;
-    vertical-align: top;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
