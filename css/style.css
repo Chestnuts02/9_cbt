@@ -636,6 +636,23 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    /* Allow wrapping on small screens */
+    gap: var(--spacing-sm);
+}
+
+/* Timer and Theme toggle wrapper */
+.header-content>div:last-child {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+@media (max-width: 480px) {
+    .header-content>div:last-child {
+        gap: var(--spacing-xs);
+        /* Reduce gap on mobile */
+    }
 }
 
 .logo {
@@ -686,6 +703,14 @@ a:hover {
 .main {
     padding: var(--spacing-2xl) 0;
     min-height: calc(100vh - 80px);
+}
+
+@media (max-width: 480px) {
+    .main {
+        padding-top: 100px;
+        /* Increase top padding to prevent header overlap */
+        padding-bottom: var(--spacing-lg);
+    }
 }
 
 /* Subject Cards */
@@ -882,6 +907,28 @@ a:hover {
     padding: var(--spacing-md);
     background: var(--gray-100);
     border-bottom: 1px solid var(--gray-200);
+    flex-wrap: wrap;
+    /* Allow controls to wrap */
+    gap: var(--spacing-sm);
+}
+
+.pdf-controls,
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+@media (max-width: 480px) {
+    .pdf-toolbar {
+        justify-content: center;
+    }
+
+    .pdf-controls,
+    .zoom-controls {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 .dark-mode .pdf-toolbar {
