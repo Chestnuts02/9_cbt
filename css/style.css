@@ -894,13 +894,23 @@ a:hover {
     overflow: auto;
     padding: var(--spacing-md);
     display: flex;
-    justify-content: center;
+    /* justify-content: center caused clipping on narrow screens */
+    flex-direction: column;
+}
+
+@media (max-width: 480px) {
+    .pdf-container {
+        padding: var(--spacing-sm);
+    }
 }
 
 .pdf-container canvas {
     /* Allow canvas to grow beyond container width for zooming */
     max-width: none;
     height: auto;
+    /* Center if smaller than container, align start if larger (prevents left clipping) */
+    margin: auto;
+    display: block;
 }
 
 /* Answer Panel */
