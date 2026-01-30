@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="9급 공무원 시험 국가직/지방직 기출문제를 CBT 형식으로 풀어보세요. 국어, 영어, 한국사, 행정법, 교육학개론 과목 지원.">
+    <title>9급 공무원 CBT | 기출문제 시험</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <span class="logo-icon">📝</span>
+                    <span>9급 CBT</span>
+                </a>
+                <nav class="nav">
+                    <a href="index.html" class="nav-link active">홈</a>
+                    <a href="#subjects" class="nav-link">과목 선택</a>
+                    <button class="theme-toggle" id="themeToggle" aria-label="테마 변경"></button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero text-center mb-xl">
+                <h1 class="text-3xl font-bold mb-md">
+                    9급 공무원 기출문제
+                    <span class="text-primary">CBT 시험</span>
+                </h1>
+                <p class="text-lg text-muted" style="max-width: 600px; margin: 0 auto;">
+                    국가직 · 지방직 기출문제를 실제 시험처럼 풀어보세요.<br>
+                    2012년부터 2025년까지 기출문제 제공
+                </p>
+            </section>
+
+            <!-- Subject Selection -->
+            <section id="subjects" class="mb-xl">
+                <h2 class="text-2xl font-bold text-center mb-lg">과목 선택</h2>
+                <div class="grid grid-5" id="subjectGrid">
+                    <!-- 국어 -->
+                    <div class="card subject-card" data-subject="korean">
+                        <div class="subject-icon">📖</div>
+                        <h3 class="subject-title">국어</h3>
+                        <p class="subject-desc">어휘, 문법, 독해, 문학</p>
+                        <span class="badge badge-primary mt-md" id="korean-count">0개 시험</span>
+                    </div>
+                    
+                    <!-- 영어 -->
+                    <div class="card subject-card" data-subject="english">
+                        <div class="subject-icon">🔤</div>
+                        <h3 class="subject-title">영어</h3>
+                        <p class="subject-desc">어휘, 문법, 독해</p>
+                        <span class="badge badge-primary mt-md" id="english-count">0개 시험</span>
+                    </div>
+                    
+                    <!-- 한국사 -->
+                    <div class="card subject-card" data-subject="history">
+                        <div class="subject-icon">🏛️</div>
+                        <h3 class="subject-title">한국사</h3>
+                        <p class="subject-desc">선사시대~현대</p>
+                        <span class="badge badge-primary mt-md" id="history-count">0개 시험</span>
+                    </div>
+                    
+                    <!-- 행정법 -->
+                    <div class="card subject-card" data-subject="adminlaw">
+                        <div class="subject-icon">⚖️</div>
+                        <h3 class="subject-title">행정법</h3>
+                        <p class="subject-desc">행정법총론, 행정구제법</p>
+                        <span class="badge badge-primary mt-md" id="adminlaw-count">0개 시험</span>
+                    </div>
+                    
+                    <!-- 교육학개론 -->
+                    <div class="card subject-card" data-subject="education">
+                        <div class="subject-icon">🎓</div>
+                        <h3 class="subject-title">교육학개론</h3>
+                        <p class="subject-desc">교육심리, 교육과정, 평가</p>
+                        <span class="badge badge-primary mt-md" id="education-count">0개 시험</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Year & Type Selection Modal -->
+            <div class="modal-overlay" id="examModal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3 class="modal-title" id="modalSubjectTitle">과목 선택</h3>
+                        <button class="modal-close" id="modalClose">✕</button>
+                    </div>
+                    
+                    <!-- Exam Type Tabs -->
+                    <div class="exam-tabs">
+                        <button class="exam-tab active" data-type="national">국가직</button>
+                        <button class="exam-tab" data-type="local">지방직</button>
+                    </div>
+                    
+                    <!-- Year Grid -->
+                    <div class="year-grid" id="yearGrid">
+                        <!-- Years will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="empty-state" id="noExamMessage" style="display: none;">
+                        <div class="empty-icon">📭</div>
+                        <h4 class="empty-title">시험 파일이 없습니다</h4>
+                        <p class="empty-desc">
+                            해당 과목의 PDF 파일을 data 폴더에 추가하세요.
+                        </p>
+                    </div>
+                    
+                    <div class="flex justify-end gap-md mt-lg">
+                        <button class="btn btn-secondary" id="modalCancelBtn">취소</button>
+                        <button class="btn btn-primary" id="startExamBtn" disabled>시험 시작</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Use Section -->
+            <section class="mb-xl">
+                <h2 class="text-2xl font-bold text-center mb-lg">사용 방법</h2>
+                <div class="grid grid-3">
+                    <div class="card text-center">
+                        <div class="subject-icon m-auto">1️⃣</div>
+                        <h4 class="font-semibold mb-sm">PDF 파일 준비</h4>
+                        <p class="text-sm text-muted">
+                            기출문제 PDF 파일을 다운로드하여<br>
+                            <code>data/[과목명]</code> 폴더에 저장하세요.
+                        </p>
+                    </div>
+                    <div class="card text-center">
+                        <div class="subject-icon m-auto">2️⃣</div>
+                        <h4 class="font-semibold mb-sm">정답 파일 추가</h4>
+                        <p class="text-sm text-muted">
+                            JSON 형식의 정답 파일을<br>
+                            같은 폴더에 저장하세요.
+                        </p>
+                    </div>
+                    <div class="card text-center">
+                        <div class="subject-icon m-auto">3️⃣</div>
+                        <h4 class="font-semibold mb-sm">시험 응시</h4>
+                        <p class="text-sm text-muted">
+                            과목과 연도를 선택하고<br>
+                            CBT 형식으로 문제를 풀어보세요!
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- File Naming Guide -->
+            <section class="card mb-xl">
+                <h3 class="text-xl font-bold mb-md">📁 파일 명명 규칙</h3>
+                <div class="grid grid-2">
+                    <div>
+                        <h4 class="font-semibold mb-sm text-primary">문제 PDF 파일</h4>
+                        <code class="p-md" style="display: block; background: var(--gray-100); border-radius: var(--radius-md);">
+                            {연도}_{유형}.pdf
+                        </code>
+                        <p class="text-sm text-muted mt-sm">
+                            예시: <code>2025_national.pdf</code>, <code>2024_local.pdf</code>
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-sm text-primary">정답 JSON 파일</h4>
+                        <code class="p-md" style="display: block; background: var(--gray-100); border-radius: var(--radius-md);">
+                            {연도}_{유형}_answers.json
+                        </code>
+                        <p class="text-sm text-muted mt-sm">
+                            예시: <code>2025_national_answers.json</code>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-lg">
+                    <h4 class="font-semibold mb-sm">📂 폴더 구조</h4>
+                    <pre class="p-md" style="background: var(--gray-100); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);">
+data/
+├── korean/          ← 국어
+│   ├── 2025_national.pdf
+│   ├── 2025_national_answers.json
+│   ├── 2025_local.pdf
+│   └── 2025_local_answers.json
+├── english/         ← 영어
+├── history/         ← 한국사
+├── adminlaw/        ← 행정법
+└── education/       ← 교육학개론</pre>
+                </div>
+                
+                <div class="mt-lg">
+                    <h4 class="font-semibold mb-sm">📝 정답 JSON 형식</h4>
+                    <pre class="p-md" style="background: var(--gray-100); border-radius: var(--radius-md); overflow-x: auto; font-size: var(--font-size-sm);">
+{
+    "examInfo": {
+        "year": 2025,
+        "type": "national",
+        "subject": "korean",
+        "totalQuestions": 20
+    },
+    "answers": [3, 2, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1]
+}</pre>
+                    <p class="text-sm text-muted mt-sm">
+                        answers 배열: 1번 문제부터 순서대로 정답 번호 (1~5)
+                    </p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="padding: var(--spacing-xl) 0; text-align: center; color: var(--light-text-secondary);">
+        <div class="container">
+            <p class="text-sm">
+                © 2025 9급 공무원 CBT. 기출문제 출처: 인사혁신처 사이버국가고시센터
+            </p>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+</html>

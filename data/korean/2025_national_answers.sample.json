@@ -1,0 +1,12 @@
+{
+    "examInfo": {
+        "year": 2025,
+        "type": "national",
+        "subject": "korean",
+        "subjectKorean": "국어",
+        "totalQuestions": 20,
+        "source": "인사혁신처 사이버국가고시센터"
+    },
+    "answers": [3, 2, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1],
+    "note": "이 파일은 샘플입니다. 실제 정답으로 교체해주세요."
+}

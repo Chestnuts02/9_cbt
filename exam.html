@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="9급 공무원 CBT 시험 - 기출문제 풀이">
+    <title>시험 진행 중 | 9급 공무원 CBT</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* Exam specific styles */
+        .exam-header {
+            background: var(--light-surface);
+            padding: var(--spacing-md) 0;
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: var(--z-sticky);
+        }
+
+        .dark-mode .exam-header {
+            background: var(--dark-surface);
+        }
+
+        .exam-main {
+            padding-top: 80px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .exam-container {
+            height: calc(100vh - 80px);
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-lg);
+        }
+
+        @media (max-width: 1024px) {
+            .exam-container {
+                grid-template-columns: 1fr;
+                height: auto;
+                overflow: auto;
+            }
+
+            .pdf-viewer {
+                height: 60vh;
+            }
+
+            .answer-panel {
+                height: auto;
+                max-height: 50vh;
+            }
+        }
+
+        .pdf-viewer {
+            display: flex;
+            flex-direction: column;
+            background: var(--light-surface);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dark-mode .pdf-viewer {
+            background: var(--dark-surface);
+        }
+
+        .pdf-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--gray-100);
+            border-bottom: 1px solid var(--gray-200);
+            flex-shrink: 0;
+        }
+
+        .dark-mode .pdf-toolbar {
+            background: var(--dark-bg-tertiary);
+            border-color: var(--dark-bg-primary);
+        }
+
+        .pdf-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .page-info {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .pdf-container {
+            flex: 1;
+            overflow: auto;
+            background: var(--gray-200);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: var(--spacing-md);
+        }
+
+        .dark-mode .pdf-container {
+            background: var(--dark-bg-primary);
+        }
+
+        #pdfCanvas {
+            box-shadow: var(--shadow-xl);
+            background: white;
+            display: block;
+            flex-shrink: 0;
+        }
+
+        .pdf-container.zoom-contain #pdfCanvas {
+            max-width: calc(100% - 2rem);
+            height: auto !important;
+            width: auto !important;
+        }
+
+        .answer-panel {
+            display: flex;
+            flex-direction: column;
+            background: var(--light-surface);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dark-mode .answer-panel {
+            background: var(--dark-surface);
+        }
+
+        .panel-header {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 1px solid var(--gray-200);
+            flex-shrink: 0;
+        }
+
+        .dark-mode .panel-header {
+            border-color: var(--dark-bg-tertiary);
+        }
+
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-md);
+        }
+
+        .panel-footer {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-top: 1px solid var(--gray-200);
+            flex-shrink: 0;
+        }
+
+        .dark-mode .panel-footer {
+            border-color: var(--dark-bg-tertiary);
+        }
+
+        .answer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+        }
+
+        .question-item {
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm);
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+
+        .dark-mode .question-item {
+            background: var(--dark-bg-tertiary);
+        }
+
+        .question-item.answered {
+            border-color: var(--primary-400);
+            background: var(--primary-50);
+        }
+
+        .dark-mode .question-item.answered {
+            background: rgba(33, 150, 243, 0.15);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .question-number {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-600);
+        }
+
+        .question-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-300);
+        }
+
+        .question-item.answered .question-status {
+            background: var(--success);
+        }
+
+        .option-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .option-btn {
+            flex: 1;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            background: var(--light-surface);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .dark-mode .option-btn {
+            background: var(--dark-surface);
+            border-color: var(--gray-600);
+            color: var(--dark-text-primary);
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary-400);
+            color: var(--primary-500);
+        }
+
+        .option-btn.selected {
+            background: var(--primary-500);
+            border-color: var(--primary-500);
+            color: white;
+        }
+
+        .progress-section {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* No PDF state */
+        .no-pdf-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: var(--spacing-2xl);
+        }
+
+        .no-pdf-icon {
+            font-size: 64px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* Zoom controls */
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .zoom-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            background: var(--light-surface);
+            cursor: pointer;
+            font-size: var(--font-size-lg);
+            transition: all var(--transition-fast);
+        }
+
+        .dark-mode .zoom-btn {
+            background: var(--dark-surface);
+            border-color: var(--gray-600);
+            color: var(--dark-text-primary);
+        }
+
+        .zoom-btn:hover {
+            border-color: var(--primary-400);
+            color: var(--primary-500);
+        }
+
+        .zoom-level {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            min-width: 50px;
+            text-align: center;
+        }
+    </style>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+</head>
+
+<body>
+    <!-- Exam Header -->
+    <header class="exam-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="flex items-center gap-md">
+                    <a href="index.html" class="logo">
+                        <span class="logo-icon">📝</span>
+                        <span>9급 CBT</span>
+                    </a>
+                    <span class="badge badge-primary" id="examBadge">-</span>
+                </div>
+                <div class="flex items-center gap-md">
+                    <div class="timer" id="timer">
+                        <span class="timer-icon">⏱️</span>
+                        <span id="timerDisplay">00:00:00</span>
+                    </div>
+                    <button class="theme-toggle" id="themeToggle" aria-label="테마 변경"></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Exam Main -->
+    <main class="exam-main">
+        <div class="exam-container">
+            <!-- PDF Viewer -->
+            <div class="pdf-viewer">
+                <div class="pdf-toolbar">
+                    <div class="pdf-controls">
+                        <button class="btn btn-sm btn-secondary" id="prevPage">◀ 이전</button>
+                        <span class="page-info">
+                            <span id="currentPage">1</span> / <span id="totalPages">1</span>
+                        </span>
+                        <button class="btn btn-sm btn-secondary" id="nextPage">다음 ▶</button>
+                    </div>
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" id="zoomOut">−</button>
+                        <span class="zoom-level" id="zoomLevel">100%</span>
+                        <button class="zoom-btn" id="zoomIn">+</button>
+                        <button class="zoom-btn" id="zoomFit" title="100% 초기화">⊡</button>
+                    </div>
+                </div>
+                <div class="pdf-container" id="pdfContainer">
+                    <canvas id="pdfCanvas"></canvas>
+                    <!-- No PDF State (hidden by default) -->
+                    <div class="no-pdf-state" id="noPdfState" style="display: none;">
+                        <div class="no-pdf-icon">📄</div>
+                        <h3 class="text-xl font-bold mb-sm">PDF 파일을 찾을 수 없습니다</h3>
+                        <p class="text-muted mb-lg">
+                            해당 시험의 PDF 파일이 존재하지 않습니다.<br>
+                            아래 경로에 PDF 파일을 추가해주세요.
+                        </p>
+                        <code class="p-md" style="background: var(--gray-100); border-radius: var(--radius-md);"
+                            id="expectedPath">
+                            data/korean/2025_national.pdf
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer Panel -->
+            <div class="answer-panel">
+                <div class="panel-header">
+                    <h3 class="font-bold mb-md">답안 입력</h3>
+                    <div class="progress-section">
+                        <div class="progress-text">
+                            <span>진행률</span>
+                            <span><span id="answeredCount">0</span> / <span id="totalQuestions">20</span></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="answer-grid" id="answerGrid">
+                        <!-- Answer items will be generated by JavaScript -->
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="flex gap-md">
+                        <button class="btn btn-secondary flex-1" id="resetBtn">초기화</button>
+                        <button class="btn btn-success flex-1" id="submitBtn">제출하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Submit Confirmation Modal -->
+    <div class="modal-overlay" id="submitModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">시험 제출</h3>
+                <button class="modal-close" id="submitModalClose">✕</button>
+            </div>
+            <div class="text-center p-lg">
+                <div style="font-size: 48px; margin-bottom: var(--spacing-md);">📋</div>
+                <p class="mb-md">
+                    <strong id="submitAnsweredCount">0</strong>개 문제 중
+                    <strong id="submitUnansweredCount">0</strong>개의 미답 문제가 있습니다.
+                </p>
+                <p class="text-muted text-sm">
+                    제출하시겠습니까? 제출 후에는 수정할 수 없습니다.
+                </p>
+            </div>
+            <div class="flex justify-end gap-md">
+                <button class="btn btn-secondary" id="submitCancelBtn">취소</button>
+                <button class="btn btn-success" id="confirmSubmitBtn">제출하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="js/exam.js"></script>
+</body>
+
+</html>
