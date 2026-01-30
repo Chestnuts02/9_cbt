@@ -948,8 +948,26 @@ a:hover {
     flex: 1;
     overflow: auto;
     padding: var(--spacing-md);
+    background: var(--light-bg-tertiary);
+    /* Optional: distinct background for scroll area */
     display: block;
-    /* Removed text-align: center as it clips start of wide content */
+}
+
+.dark-mode .pdf-container {
+    background: var(--dark-bg-primary);
+}
+
+/* Wrapper ensures safe centering:
+   - If content < container: centers it
+   - If content > container: expands to fit content, so scrolling starts at left/top (preventing clip) */
+.pdf-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* Always align top */
+    min-width: 100%;
+    width: fit-content;
+    min-height: 100%;
 }
 
 @media (max-width: 480px) {
@@ -959,13 +977,12 @@ a:hover {
 }
 
 .pdf-container canvas {
-    /* Allow canvas to grow beyond container width for zooming */
+    display: block;
     max-width: none;
     height: auto;
-    /* Use block display + margin auto for SAFE centering (centers if fits, aligns start if overflows) */
-    display: block;
-    margin: 0 auto;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 0;
+    /* Wrapper handles positioning */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Answer Panel */
