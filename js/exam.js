@@ -117,9 +117,18 @@ function parseUrlParams() {
 // Theme Management
 // ============================================
 function initTheme() {
+    // Default to dark mode if no preference is stored
+    const storedPreference = localStorage.getItem('darkMode');
+    if (storedPreference === null) {
+        state.darkMode = true;
+        localStorage.setItem('darkMode', 'true');
+    }
+
     if (state.darkMode) {
         document.body.classList.add('dark-mode');
     }
+
+    updateThemeButton();
 
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
@@ -131,6 +140,22 @@ function toggleTheme() {
     state.darkMode = !state.darkMode;
     document.body.classList.toggle('dark-mode', state.darkMode);
     localStorage.setItem('darkMode', state.darkMode);
+    updateThemeButton();
+}
+
+function updateThemeButton() {
+    const themeIcon = document.querySelector('.theme-icon');
+    const themeText = document.querySelector('.theme-text');
+
+    if (themeIcon && themeText) {
+        if (state.darkMode) {
+            themeIcon.textContent = '☀️';
+            themeText.textContent = '라이트모드';
+        } else {
+            themeIcon.textContent = '🌙';
+            themeText.textContent = '다크모드';
+        }
+    }
 }
 
 // ============================================
