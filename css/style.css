@@ -172,6 +172,14 @@ body.dark-mode {
     color: var(--dark-text-primary);
 }
 
+@media (max-width: 480px) {
+
+    /* Unstick header on mobile to prevent clipping and save space */
+    .header {
+        position: relative;
+    }
+}
+
 /* Typography */
 h1,
 h2,
@@ -707,8 +715,8 @@ a:hover {
 
 @media (max-width: 480px) {
     .main {
-        padding-top: 100px;
-        /* Increase top padding to prevent header overlap */
+        padding-top: var(--spacing-md);
+        /* Reset padding since header scrolls */
         padding-bottom: var(--spacing-lg);
     }
 }
@@ -955,8 +963,8 @@ a:hover {
     /* Allow canvas to grow beyond container width for zooming */
     max-width: none;
     height: auto;
-    /* Center if smaller than container, align start if larger (prevents left clipping) */
-    margin: auto;
+    /* Center horizontally, but align top vertically to prevent clipping on zoom */
+    margin: 0 auto;
     display: block;
 }
 
