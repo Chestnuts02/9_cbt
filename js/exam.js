@@ -118,8 +118,7 @@ function parseUrlParams() {
 // ============================================
 function initTheme() {
     // Default to dark mode if no preference is stored
-    const storedPreference = localStorage.getItem('darkMode');
-    if (storedPreference === null) {
+    if (localStorage.getItem('darkMode') === null) {
         state.darkMode = true;
         localStorage.setItem('darkMode', 'true');
     }
@@ -144,8 +143,11 @@ function toggleTheme() {
 }
 
 function updateThemeButton() {
-    const themeIcon = document.querySelector('.theme-icon');
-    const themeText = document.querySelector('.theme-text');
+    const themeBtn = document.getElementById('themeToggle');
+    if (!themeBtn) return;
+
+    const themeIcon = themeBtn.querySelector('.theme-icon');
+    const themeText = themeBtn.querySelector('.theme-text');
 
     if (themeIcon && themeText) {
         if (state.darkMode) {
